@@ -1,15 +1,47 @@
+const AppointmentModel = require('../models/Appointment');  // Ensure this model is correctly imported
+
 class ReviewController {
-    constructor(reviewModel) {
+    constructor(reviewModel, appointmentModel, notificationService) {
         this.Review = reviewModel;
+        this.Appointment = appointmentModel;
+        this.NotificationService = notificationService;
     }
 
     async addReview(req, res) {
         try {
-            const newReview = new this.Review(req.body);
+            const { doctorId, patientId, rating, comment } = req.body;
+            const userId = req.user.id;  // Assuming this comes from decoded JWT token
+
+            // Check if the patient has completed an appointment with the doctor
+            const appointment = await this.Appointment.findOne({
+                patient: patientId,
+                doctor: doctorId,
+                status: 'Completed'
+            });
+
+            if (!appointment) {
+                return res.status(403).json({ message: "No completed appointments found with this doctor." });
+            }
+
+            // Validate patient and rating
+            if (req.user.role !== 'patient' || userId !== patientId) {
+                return res.status(403).json({ message: "Only patients can leave reviews." });
+            }
+
+            if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+                return res.status(400).json({ message: "Rating must be an integer between 1 and 5." });
+            }
+
+            const newReview = new this.Review({
+                doctorId,
+                patientId,
+                rating: parseFloat(rating.toFixed(1)),
+                comment
+            });
             await newReview.save();
             res.status(201).json(newReview);
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            res.status(500).json({ message: "Failed to add review: " + error.message });
         }
     }
 
