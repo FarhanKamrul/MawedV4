@@ -56,6 +56,9 @@ app.use('/api/patients', patientRoutes);
 const reviewRoutes = require('./routes/reviewRoutes');
 app.use('/api/reviews', reviewRoutes);
 
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/api/notifications', notificationRoutes);
+
 
 // After all routes
 app.use((err, req, res, next) => {

@@ -4,7 +4,7 @@
   "description": "4th attempt @ Mawed",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --reporters jest-silent-reporter",
     "start": "node server.js"
   },
   "keywords": [],
@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "jest-silent-reporter": "^0.5.0",
     "mongoose": "^8.3.2"
   },
   "devDependencies": {

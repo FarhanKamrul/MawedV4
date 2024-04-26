@@ -1,11 +1,19 @@
-const Notification = require('../models/Notification'); // Adjust the path as necessary
+const mongoose = require('mongoose');
+const Notification = require('../models/Notification');
 
 class NotificationService {
     constructor() {}
 
-    // Store a notification in the database
+    _ensureObjectId(id) {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            throw new Error('Invalid ID format');
+        }
+        return new mongoose.Types.ObjectId(id);
+    }
+
     async addNotification(userId, message) {
         try {
+            userId = this._ensureObjectId(userId); // Corrected usage
             const notification = new Notification({
                 userId,
                 message
@@ -17,9 +25,9 @@ class NotificationService {
         }
     }
 
-    // Retrieve all notifications for a user
     async getNotifications(userId) {
         try {
+            userId = this._ensureObjectId(userId);
             return await Notification.find({ userId: userId, read: false });
         } catch (error) {
             console.error('Failed to retrieve notifications:', error);
@@ -27,9 +35,9 @@ class NotificationService {
         }
     }
 
-    // Mark a notification as read
     async markAsRead(notificationId) {
         try {
+            notificationId = this._ensureObjectId(notificationId);
             await Notification.findByIdAndUpdate(notificationId, { read: true });
             console.log(`Notification ${notificationId} marked as read`);
         } catch (error) {

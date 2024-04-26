@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const NotificationService = require('../services/NotificationService');
-const Notification = require('../models/notification'); // Assume this is your notification model file
+const Notification = require('../models/Notification'); // Assume this is your notification model file
 
 describe('NotificationService', () => {
     let mongoServer;
@@ -26,7 +26,11 @@ describe('NotificationService', () => {
 
     test('addNotification should save a notification', async () => {
         const userId = new mongoose.Types.ObjectId();
+        console.log('userId: ', userId);
+        //find datatype of userId
+        console.log('userId datatype: ', typeof userId);
         const message = "Test notification message";
+        console.log('message datatyoe: ', typeof message);
 
         await notificationService.addNotification(userId, message);
 
